@@ -194,6 +194,7 @@ function fetch_meteor() {
 
   git clone -b auth git://github.com/lwille/meteor.git $CACHE_DIR/meteor
   export PREFIX=$METEOR_HOME/usr/lib
+  mkdir -p $PREFIX
   $CACHE_DIR/meteor/install.sh
   if [[ $? == 0 ]]; then
     echo $(meteor --version) successfully installed
