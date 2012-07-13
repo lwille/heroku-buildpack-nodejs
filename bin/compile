@@ -177,20 +177,29 @@ METEOR_HOME="$BUILD_DIR/.meteor/local"
 PATH="$METEOR_HOME/usr/bin:$METEOR_HOME/usr/lib/meteor/bin:$PATH"
 
 function fetch_meteor() {
-  if [ -f "$METEOR_HOME/usr/bin/meteor" ] ; then
+  if [ -f "$METEOR_HOME/usr/lib/meteor/bin/meteor" ] ; then
     # Skip if meteor is already fetched
     return
   fi
 
-  eval $(curl install.meteor.com | grep '^VERSION=')
-  PACKAGE="meteor_${VERSION}-1_amd64.deb"
+  # eval $(curl install.meteor.com | grep '^VERSION=')
+  # PACKAGE="meteor_0.3.7-1_amd64.deb"
 
-  echo "Fetching meteor deb package"
-  curl -o "$CACHE_DIR/$PACKAGE" "http://d3sqy0vbqsdhku.cloudfront.net/${PACKAGE}"
+  # echo "Fetching meteor deb package"
+  # curl -o "$CACHE_DIR/$PACKAGE" "http://d3sqy0vbqsdhku.cloudfront.net/meteor_0.3.7-1_amd64.deb"
 
-  echo "Unpacking meteor"
-  [ ! -d "$METEOR_HOME" ] && mkdir -p "$METEOR_HOME"
-  ar p "$CACHE_DIR/$PACKAGE" data.tar.gz | tar -C "$METEOR_HOME" -zxf -
+  # echo "Unpacking meteor"
+  # [ ! -d "$METEOR_HOME" ] && mkdir -p "$METEOR_HOME"
+  # ar p "$CACHE_DIR/$PACKAGE" data.tar.gz | tar -C "$METEOR_HOME" -zxf -
+
+  git clone -b auth git://github.com/lwille/meteor.git $METEOR_HOME
+  export PREFIX=$METEOR_HOME/usr/lib
+  $METEOR_HOME/install.sh
+  if [[ $? == 0 ]]; then
+    echo $(meteor --version) successfully installed
+  fi
+
+
 }
 
 function build() {
