@@ -177,7 +177,7 @@ METEOR_HOME="$BUILD_DIR/.meteor/local"
 PATH="$METEOR_HOME/usr/bin:$METEOR_HOME/usr/lib/meteor/bin:$PATH"
 
 function fetch_meteor() {
-  if [ -f "$METEOR_HOME/usr/lib/meteor/bin/meteor" ] ; then
+  if [ -d "$CACHE_DIR/meteor" ] ; then
     # Skip if meteor is already fetched
     return
   fi
@@ -198,9 +198,7 @@ function fetch_meteor() {
   $CACHE_DIR/meteor/install.sh
   if [[ $? == 0 ]]; then
     echo $(meteor --version) successfully installed
-  fi
-
-
+  fi  
 }
 
 function build() {
