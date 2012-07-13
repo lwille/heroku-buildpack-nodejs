@@ -177,7 +177,7 @@ METEOR_HOME="$BUILD_DIR/.meteor/local"
 PATH="$METEOR_HOME/usr/bin:$METEOR_HOME/usr/lib/meteor/bin:$PATH"
 
 function fetch_meteor() {
-  if [ -d "$CACHE_DIR/meteor" ] ; then
+  if [ -f "$METEOR_HOME/usr/lib/meteor/bin/meteor" ] ; then
     # Skip if meteor is already fetched
     return
   fi
@@ -191,8 +191,12 @@ function fetch_meteor() {
   # echo "Unpacking meteor"
   # [ ! -d "$METEOR_HOME" ] && mkdir -p "$METEOR_HOME"
   # ar p "$CACHE_DIR/$PACKAGE" data.tar.gz | tar -C "$METEOR_HOME" -zxf -
-
-  git clone -b auth git://github.com/lwille/meteor.git $CACHE_DIR/meteor
+  if [ -d $CACHE_DIR/meteor ] ; then
+    echo "meteor already fetched"
+  else
+    git clone -b auth git://github.com/lwille/meteor.git $CACHE_DIR/meteor
+  fi
+  
   export PREFIX=$METEOR_HOME/usr/lib
   mkdir -p $PREFIX
   $CACHE_DIR/meteor/install.sh
