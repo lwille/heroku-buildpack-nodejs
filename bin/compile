@@ -177,26 +177,21 @@ METEOR_HOME="$BUILD_DIR/.meteor/local"
 PATH="$METEOR_HOME/usr/bin:$METEOR_HOME/usr/lib/meteor/bin:$PATH"
 
 function fetch_meteor() {
-  if [ -f "$METEOR_HOME/usr/lib/meteor/bin/meteor" ] ; then
-    # Skip if meteor is already fetched
-    return
-  fi
-
-  # eval $(curl install.meteor.com | grep '^VERSION=')
-  # PACKAGE="meteor_0.3.7-1_amd64.deb"
-
-  # echo "Fetching meteor deb package"
-  # curl -o "$CACHE_DIR/$PACKAGE" "http://d3sqy0vbqsdhku.cloudfront.net/meteor_0.3.7-1_amd64.deb"
-
-  # echo "Unpacking meteor"
-  # [ ! -d "$METEOR_HOME" ] && mkdir -p "$METEOR_HOME"
-  # ar p "$CACHE_DIR/$PACKAGE" data.tar.gz | tar -C "$METEOR_HOME" -zxf -
-  if [ -d $CACHE_DIR/meteor ] ; then
-    echo "meteor already fetched"
-  else
-    git clone -b auth git://github.com/lwille/meteor.git $CACHE_DIR/meteor
-  fi
+  eval $(curl install.meteor.com | grep '^VERSION=')
+  PACKAGE="meteor_${VERSION}-1_amd64.deb"
   
+  if [ -f "$METEOR_HOME/usr/bin/meteor" ] ; then
+    INSTALLED_VERSION=$(meteor --version|cut -d ' ' -f 3)
+    if [ "$VERSION" == "$INSTALLED_VERSION" ]; then
+      echo "Skipping meteor installation - version $INSTALLED_VERSION is current."
+      # skip installation only if the current version is installed
+      return    
+    fi
+  fi
+
+  rm -rf $CACHE_DIR/meteor
+  git clone -b auth git://github.com/lwille/meteor.git $CACHE_DIR/meteor
+    
   export PREFIX=$METEOR_HOME/usr/lib
   mkdir -p $PREFIX
   $CACHE_DIR/meteor/install.sh
