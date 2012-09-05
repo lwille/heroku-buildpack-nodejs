@@ -177,13 +177,18 @@ METEOR_HOME="$BUILD_DIR/.meteor/local"
 PATH="$METEOR_HOME/usr/bin:$METEOR_HOME/usr/lib/meteor/bin:$PATH"
 
 function fetch_meteor() {
-  if [ -f "$METEOR_HOME/usr/bin/meteor" ] ; then
-    # Skip if meteor is already fetched
-    return
-  fi
 
   eval $(curl install.meteor.com | grep '^VERSION=')
   PACKAGE="meteor_${VERSION}-1_amd64.deb"
+  
+  if [ -f "$METEOR_HOME/usr/bin/meteor" ] ; then
+    INSTALLED_VERSION=$(meteor --version|cut -d ' ' -f 3)
+    if [ "$VERSION" != "$INSTALLED_VERSION" ]; then
+      # skip installation only if the current version is installed
+      return
+    fi
+  fi
+
 
   echo "Fetching meteor deb package"
   curl -o "$CACHE_DIR/$PACKAGE" "http://d3sqy0vbqsdhku.cloudfront.net/${PACKAGE}"
